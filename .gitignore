@@ -571,7 +571,7 @@ TECH_DOC.md
 config.json
 config.yaml
 config.yml
-config copy.json
+configcopy.json
 
 # Build artifacts
 build/

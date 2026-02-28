@@ -23,12 +23,12 @@
     {
       "name": "default",
       "rdbms": "mysql",
-      "host": "127.0.0.1",
-      "port": 3306,
-      "dbname": "culture_hub",
-      "user": "root",
-      "passwd": "Gatodegeminis",
-      "connection_number": 4,
+      "host": "DB_HOST",
+      "port": "DB_PORT",
+      "dbname": "DB_NAME",
+      "user": "DB_USER",
+      "passwd": "DB_PASSWORD",
+      "connection_number": "DB_POOL_SIZE",
       "auto_batch": "on"
     }
   ],
