@@ -1,0 +1,35 @@
+{
+  "app": {
+    "threads_num": 4
+  },
+
+  "listeners": [
+    {
+      "address": "0.0.0.0",
+      "port": 80,
+      "https": false
+    },
+    {
+      "address": "0.0.0.0",
+      "port": 443,
+      "https": false
+    }
+  ],
+
+  "db_clients": [
+    {
+      "name": "default",
+      "rdbms": "mysql",
+      "host": "127.0.0.1",
+      "port": 3306,
+      "dbname": "culture_hub",
+      "user": "root",
+      "passwd": "Gatodegeminis",
+      "connection_number": 4
+    }
+  ],
+
+  "log": {
+    "level": "INFO"
+  }
+}
