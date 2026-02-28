@@ -1,6 +1,9 @@
 {
   "app": {
-    "threads_num": 4
+    "threads_num": 4,
+    "max_connections": 1024,
+    "client_max_body_size": 10000000,
+    "upload_path": "./uploads"
   },
 
   "listeners": [
@@ -25,7 +28,8 @@
       "dbname": "culture_hub",
       "user": "root",
       "passwd": "Gatodegeminis",
-      "connection_number": 4
+      "connection_number": 4,
+      "auto_batch": "on"
     }
   ],
 

@@ -548,7 +548,6 @@ This project is provided as-is for educational and commercial use.
 
 - **Initial Developer**: \unexCoder
 - **Framework**: Drogon Web Framework Contributors
-- **Location**: `/Volumes/Archivo/LUIGI/work/dev/c++/drogon/init_drogon`
 
 ## 🔗 Resources
 

@@ -567,10 +567,16 @@ TECH_DOC.md
 *tech_doc.md
 *tech*.md
 
-# Configuration files
-config copy.json
+# Configuration files - SENSITIVE DATA, DO NOT COMMIT
+config.json
 config.yaml
 config.yml
+config copy.json
 
 # Build artifacts
 build/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
