@@ -1,4 +1,4 @@
-# Technical Description: Drogon C++ Web Server Implementation
+# Technical Document: Drogon C++ Web Server Implementation
 
 ## 1. Overview
 

@@ -559,3 +559,18 @@ FodyWeavers.xsd
 *.tlog
 
 # End of https://www.toptal.com/developers/gitignore/api/intellij+all,visualstudio,visualstudiocode,cmake,c,c++
+
+
+### Dev Files ###
+# Documentation
+TECHNICAL_DESCRIPTION.md
+*tech_doc.md
+*tech*.md
+
+# Configuration files
+config copy.json
+config.yaml
+config.yml
+
+# Build artifacts
+build/
