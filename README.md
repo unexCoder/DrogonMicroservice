@@ -143,7 +143,7 @@ User login endpoint. Returns a JWT-like token via UUID generation.
 
 **Example:**
 ```bash
-curl -X POST "http://localhost/api/v1/token?userId=john_doe&passwd=secret123"
+curl -X POST "http://localhost/demo/v1/User/token?userId=john_doe&passwd=secret123"
 ```
 
 ---
@@ -167,7 +167,7 @@ Fetch user information. **Protected with OriginRejectFilter (CORS validation)**.
 
 **Example:**
 ```bash
-curl "http://localhost/api/v1/john_doe/info?token=550e8400-e29b-41d4-a716-446655440000"
+curl "http://localhost/demo/v1/User/john_doe/info?token=550e8400-e29b-41d4-a716-446655440000"
 ```
 
 **Note:** This endpoint is protected by CORS filtering. Requests from unauthorized origins will be rejected with HTTP 403.
@@ -240,13 +240,9 @@ init_drogon/
 ├── models/                          # Database models (ORM)
 ├── views/                           # Template views (if needed)
 │
-├── test/                            # Unit tests
-│   ├── CMakeLists.txt
-│   └── test_main.cc
-│
-└── build/                           # Build output (generated)
-    ├── init_drogon                  # Compiled executable
-    └── CMakeFiles/
+├-── test/                            # Unit tests
+    ├── CMakeLists.txt
+    └── test_main.cc
 ```
 
 ## 🔌 Controllers Overview
@@ -358,13 +354,13 @@ curl -v -X POST http://localhost/
 
 **User Login:**
 ```bash
-curl -v -X POST "http://localhost/api/v1/token?userId=test_user&passwd=test_pass"
+curl -v -X POST "http://localhost/demo/v1/User/token?userId=test_user&passwd=test_pass"
 ```
 
 **User Info:**
 ```bash
 TOKEN="<token_from_login>"
-curl -v "http://localhost/api/v1/test_user/info?token=$TOKEN"
+curl -v "http://localhost/demo/v1/User/$id/info?token=$TOKEN"
 ```
 
 **WebSocket:**
@@ -474,7 +470,6 @@ sudo systemctl status drogon
 
 ## 📖 Documentation
 
-- **Technical Details**: See [TECHNICAL_DESCRIPTION.md](TECHNICAL_DESCRIPTION.md)
 - **Drogon Docs**: https://github.com/drogonframework/drogon/wiki
 - **API Reference**: Build with docs flag: `cmake -DBUILD_DOC=ON`
 
@@ -551,7 +546,7 @@ This project is provided as-is for educational and commercial use.
 
 ## 👥 Authors
 
-- **Initial Developer**: Luigi (LUIGI)
+- **Initial Developer**: \unexCoder
 - **Framework**: Drogon Web Framework Contributors
 - **Location**: `/Volumes/Archivo/LUIGI/work/dev/c++/drogon/init_drogon`
 
