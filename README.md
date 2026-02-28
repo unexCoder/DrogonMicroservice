@@ -319,9 +319,9 @@ WS   /echo
       "rdbms": "mysql",
       "host": "127.0.0.1",
       "port": 3306,
-      "dbname": "culture_hub",
-      "user": "root",
-      "passwd": "Gatodegeminis",
+      "dbname": "db_name",
+      "user": "rootuser",
+      "passwd": "your_password",
       "connection_number": 4      // Connection pool size
     }
   ],
