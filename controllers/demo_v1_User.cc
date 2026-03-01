@@ -13,7 +13,8 @@ void User::login(const drogon::HttpRequestPtr &req,
 
     Json::Value ret;
     ret["result"] = "ok";
-    ret["token"] = drogon::utils::getUuid();
+    ret["id"] = userId;                     // <-- added id field
+    ret["token"] = drogon::utils::getUuid(); // <-- generated token
 
     auto resp = drogon::HttpResponse::newHttpJsonResponse(ret);
     callback(resp);
@@ -22,15 +23,13 @@ void User::login(const drogon::HttpRequestPtr &req,
 void User::getInfo(const drogon::HttpRequestPtr &req,
                    std::function<void (const drogon::HttpResponsePtr &)> &&callback,
                    std::string userId,
-                   const std::string &token) const
+                   const std::string &token)
 {
-    LOG_DEBUG << "User " << userId << " get his information";
-
+    
     Json::Value ret;
     ret["result"] = "ok";
-    ret["user_name"] = "Jack";
-    ret["user_id"] = userId;
-    ret["gender"] = 1;
+    ret["id"] = userId;     // <-- return id as JSON
+    ret["token"] = token;   // <-- return token as JSON
 
     auto resp = drogon::HttpResponse::newHttpJsonResponse(ret);
     callback(resp);

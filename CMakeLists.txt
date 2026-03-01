@@ -31,7 +31,12 @@ add_executable(${PROJECT_NAME} main.cc)
 #
 # and comment out the following lines
 find_package(Drogon CONFIG REQUIRED)
-target_link_libraries(${PROJECT_NAME} PRIVATE Drogon::Drogon)
+# target_link_libraries(${PROJECT_NAME} PRIVATE Drogon::Drogon)
+target_link_libraries(${PROJECT_NAME} PRIVATE 
+    Drogon::Drogon
+    "/opt/homebrew/lib/libmysqlclient.dylib"  # this is mariadb, matches runtime
+    # "/usr/local/mysql-9.1.0-macos14-arm64/lib/libmysqlclient.dylib"
+)
 
 # ##############################################################################
 

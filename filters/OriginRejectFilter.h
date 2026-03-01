@@ -1,14 +1,14 @@
 #pragma once
 
 #include <drogon/HttpMiddleware.h>
-using namespace drogon;
+#include <drogon/HttpResponse.h>
 
-class OriginRejectFilter : public HttpMiddleware<OriginRejectFilter>
+class OriginRejectFilter : public drogon::HttpMiddleware<OriginRejectFilter>
 {
 public:
     OriginRejectFilter();  // constructor
 
-    void invoke(const HttpRequestPtr &req,
-                MiddlewareNextCallback &&nextCb,
-                MiddlewareCallback &&mcb) override;
+    void invoke(const drogon::HttpRequestPtr &req,
+                drogon::MiddlewareNextCallback &&nextCb,
+                drogon::MiddlewareCallback &&mcb) override;
 };

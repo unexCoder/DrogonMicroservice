@@ -4,9 +4,9 @@ OriginRejectFilter::OriginRejectFilter()
 {
 }
 
-void OriginRejectFilter::invoke(const HttpRequestPtr &req,
-                                MiddlewareNextCallback &&nextCb,
-                                MiddlewareCallback &&mcb)
+void OriginRejectFilter::invoke(const drogon::HttpRequestPtr &req,
+                                drogon::MiddlewareNextCallback &&nextCb,
+                                drogon::MiddlewareCallback &&mcb)
 {
     std::string origin = req->getHeader("origin");
 
@@ -14,14 +14,16 @@ void OriginRejectFilter::invoke(const HttpRequestPtr &req,
     if (!origin.empty() &&
         origin.find("www.some-evil-place.com") != std::string::npos)
     {
-        mcb(HttpResponse::newNotFoundResponse(req));
+        auto resp = drogon::HttpResponse::newHttpResponse();
+        resp->setStatusCode(drogon::k403Forbidden);
+        mcb(resp);
         return;
     }
 
     // Handle CORS preflight
-    if (req->method() == Options)
+    if (req->method() == drogon::Options)
     {
-        auto resp = HttpResponse::newHttpResponse();
+        auto resp = drogon::HttpResponse::newHttpResponse();
 
         if (!origin.empty())
         {
@@ -31,19 +33,24 @@ void OriginRejectFilter::invoke(const HttpRequestPtr &req,
             resp->addHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
         }
 
-        resp->setStatusCode(k200OK);
+        resp->setStatusCode(drogon::k200OK);
         mcb(resp);
         return;
     }
 
     // Continue middleware chain
-    std::move(nextCb)(
-        [origin, mcb = std::move(mcb)](const HttpResponsePtr &resp) mutable {
-            if (!origin.empty())
-            {
-                resp->addHeader("Access-Control-Allow-Origin", origin);
-                resp->addHeader("Access-Control-Allow-Credentials", "true");
-            }
-            mcb(resp);
-        });
+    auto responseCb = [origin](const drogon::HttpResponsePtr &resp) {
+        if (!resp)
+        {
+            return;
+        }
+        
+        if (!origin.empty())
+        {
+            resp->addHeader("Access-Control-Allow-Origin", origin);
+            resp->addHeader("Access-Control-Allow-Credentials", "true");
+        }
+    };
+    
+    nextCb(std::move(responseCb));
 }
