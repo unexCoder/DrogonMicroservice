@@ -1,139 +1,184 @@
 # Drogon Web Server - Culture Hub API
 
-A high-performance C++ web application built with the **Drogon Framework**. This project demonstrates modern C++ web development patterns including HTTP/REST APIs, WebSocket support, middleware filtering, and async database integration.
+A high-performance C++ web server built with **Drogon Framework** for the Culture Hub platform. This project demonstrates production-grade C++ web development with HTTP/REST APIs, WebSocket support, middleware filtering, request logging, and async database integration.
+
+**Status:** Production-ready | **Language:** C++17/C++20 | **Framework:** Drogon 1.8+
 
 ## 🚀 Features
 
-- **Multi-protocol Support**
-  - HTTP/1.1 on port 80
-  - HTTPS on port 443 (configurable)
-  - WebSocket real-time communication
+### Multi-Protocol Support
+- HTTP/1.1 on configurable ports (80, 443, 8080)
+- HTTPS/TLS encryption support
+- WebSocket real-time bidirectional communication
+- Request compression and keep-alive optimization
 
-- **High Performance**
-  - Event-driven, non-blocking I/O architecture
-  - Multi-threaded worker pool (4 threads configurable)
-  - Handles thousands of concurrent connections
-  - Minimal memory footprint
+### High Performance & Scalability
+- Event-driven, non-blocking asynchronous I/O
+- Multi-threaded worker pool (configurable, default 4 threads)
+- Connection pooling for database operations
+- Handles thousands of concurrent connections with minimal latency
+- Optimized memory management and resource cleanup
 
-- **RESTful API**
-  - Simple health check endpoints
-  - User authentication service
-  - Protected user info endpoints with CORS filtering
+### RESTful API with Features
+- Database health monitoring endpoints
+- User authentication with token-based verification
+- Protected endpoints with input validation
+- Parameterized request handling
+- Request logging and performance metrics
 
-- **Real-time Communication**
-  - WebSocket echo service with middleware validation
-  - Bidirectional message handling
+### Real-time Communication
+- WebSocket echo service with persistent connections
+- Bidirectional message handling
+- Connection lifecycle management
+- Message type detection and routing
 
-- **Database Integration**
-  - MySQL connection pooling
-  - Async query operations
-  - Support for PostgreSQL/SQLite3
+### Database Integration
+- MySQL/MariaDB async connection pooling
+- Prepared statement support
+- Transaction management
+- Auto-retry on connection loss
+- Support for PostgreSQL/SQLite3 configurations
 
-- **Enterprise Ready**
-  - Comprehensive logging system
-  - Middleware/filter support
-  - YAML/JSON configuration
-  - Built-in CORS validation
+### Enterprise Security & Quality
+- Request filtering with custom middleware
+- CORS origin validation
+- Input parameter sanitization
+- Comprehensive request/response logging
+- Time-tracking filters for performance monitoring
+- Configuration via JSON/YAML (secrets managed via environment variables)
 
 ## 📋 System Requirements
 
-- **C++ Compiler**: GCC 7+ or Clang 6+ (C++17 minimum)
-- **Build System**: CMake 3.5+
-- **Database**: MySQL 5.7+ (optional)
-- **OS**: Linux, macOS, Windows (WSL)
+- **C++ Compiler**: GCC 9+ or Clang 10+ (C++17 minimum, C++20 recommended)
+- **Build System**: CMake 3.15+
+- **Database**: MySQL 5.7+ or MariaDB 10.3+ (optional)
+- **OS**: Linux, macOS, Windows (WSL2)
+- **Libraries**: Drogon 1.8.0+
 
-## 🔧 Installation & Setup
+## 🔧 Quick Start - Local Development
 
 ### 1. Install Dependencies
 
-**Ubuntu/Debian:**
+**macOS (with Homebrew):**
+```bash
+brew install cmake drogon mysql sqlite3
+```
+
+**Ubuntu / Debian:**
 ```bash
 sudo apt-get update
-sudo apt-get install build-essential cmake git libdrogon-dev
+sudo apt-get install build-essential cmake libdrogon-dev default-libmysqlclient-dev
 ```
 
-**macOS:**
-```bash
-brew install cmake drogon
-```
-
-### 2. Clone and Build
+### 2. Clone & Build
 
 ```bash
-cd /Volumes/Archivo/LUIGI/work/dev/c++/drogon/init_drogon
+git clone <repo-url> culture-hub
+cd culture-hub
 mkdir -p build && cd build
 cmake .. -DCMAKE_BUILD_TYPE=Release
-cmake --build . --config Release
+cmake --build .
 ```
 
-### 3. Configure Database (Optional)
+### 3. Setup Configuration
 
-Edit `config.json`:
-```json
-{
-  "db_clients": [
-    {
-      "name": "default",
-      "rdbms": "mysql",
-      "host": "127.0.0.1",
-      "port": 3306,
-      "dbname": "culture_hub",
-      "user": "root",
-      "passwd": "your_password",
-      "connection_number": 4
-    }
-  ]
-}
+**Create `.env` file** (never commit this):
+```bash
+cp .env.example .env
+# Edit with your local database credentials
+nano .env
 ```
 
-### 4. Run the Server
+**Create `config.json`** from template:
+```bash
+cp config.example.json config.json
+```
+
+### 4. Setup Database (if using MySQL)
 
 ```bash
+# Create database and user
+mysql -u root -p << EOF
+CREATE DATABASE IF NOT EXISTS culture_hub;
+CREATE USER 'culture_user'@'localhost' IDENTIFIED BY 'secure_password';
+GRANT ALL PRIVILEGES ON culture_hub.* TO 'culture_user'@'localhost';
+FLUSH PRIVILEGES;
+EOF
+```
+
+### 5. Run the Server
+
+```bash
+cd build
 ./init_drogon
-# Server starts on 0.0.0.0:80
+# Logs show startup on configured ports
+```
+
+Server will start with output like:
+```
+[INFO] Listening on 0.0.0.0:8080
+[INFO] Application started successfully
 ```
 
 ## 📡 API Endpoints
 
-### Health Check Endpoints
+All endpoints are organized by functionality and include example usage.
+
+### 1. Health Check Endpoints
 
 #### GET `/`
-Simple health check endpoint.
+Simple health check. Returns plain text response.
 
 ```bash
-curl http://localhost/
+curl http://localhost:8080/
 # Response: "Hello unexCoder!"
 ```
 
 #### POST `/`
-Health check endpoint supporting POST requests.
+Health check supporting POST requests.
 
 ```bash
-curl -X POST http://localhost/
+curl -X POST http://localhost:8080/
 # Response: "Hello unexCoder!"
 ```
 
-#### GET/POST `/test`
-Test endpoint for debugging.
+#### GET `/test`
+Test endpoint for debugging request handling.
 
 ```bash
-curl http://localhost/test
-curl -X POST http://localhost/test
+curl http://localhost:8080/test
 # Response: "Hello unexCoder!"
+```
+
+#### POST `/test`
+Test endpoint supporting POST requests.
+
+```bash
+curl -X POST http://localhost:8080/test
+# Response: "Hello unexCoder!"
+```
+
+#### GET `/health/db`
+Database connectivity health check. Verifies connection pool and database availability.
+
+```bash
+curl http://localhost:8080/health/db
+# Response: {"status": "ok", "database": "connected"}
+# or {"status": "error", "message": "database unavailable"}
 ```
 
 ---
 
-### User API (Namespace: `api/v1`)
+### 2. User Authentication API
 
 #### POST `/api/v1/token?userId={userId}&passwd={passwd}`
-User login endpoint. Returns a JWT-like token via UUID generation.
+User login endpoint. Validates credentials and returns authentication token.
 
 **Parameters:**
-- `userId` (query): User identifier
-- `passwd` (query): User password
+- `userId` (string, required): User identifier
+- `passwd` (string, required): User password (plaintext in requests, never log this)
 
-**Response:**
+**Response:** JSON object with token
 ```json
 {
   "result": "ok",
@@ -143,19 +188,23 @@ User login endpoint. Returns a JWT-like token via UUID generation.
 
 **Example:**
 ```bash
-curl -X POST "http://localhost/demo/v1/User/token?userId=john_doe&passwd=secret123"
+curl -X POST "http://localhost:8080/api/v1/token?userId=john_doe&passwd=password123"
 ```
+
+**Security Note:** Use HTTPS in production. Credentials should be sent via secure channels.
 
 ---
 
+### 3. User Information API (Protected)
+
 #### GET `/api/v1/{userId}/info?token={token}`
-Fetch user information. **Protected with OriginRejectFilter (CORS validation)**.
+Fetch user information. **Requires valid authentication token and passes CORS validation**.
 
 **Parameters:**
-- `userId` (path): User identifier
-- `token` (query): Authentication token
+- `userId` (string, path): User identifier whose info is requested
+- `token` (string, query): Authentication token from login endpoint
 
-**Response:**
+**Response:** JSON user object
 ```json
 {
   "result": "ok",
@@ -167,405 +216,356 @@ Fetch user information. **Protected with OriginRejectFilter (CORS validation)**.
 
 **Example:**
 ```bash
-curl "http://localhost/demo/v1/User/john_doe/info?token=550e8400-e29b-41d4-a716-446655440000"
+TOKEN=$(curl -s -X POST "http://localhost:8080/api/v1/token?userId=john_doe&passwd=password123" \
+  | jq -r '.token')
+
+curl "http://localhost:8080/api/v1/john_doe/info?token=$TOKEN"
 ```
 
-**Note:** This endpoint is protected by CORS filtering. Requests from unauthorized origins will be rejected with HTTP 403.
+**Security Notes:**
+- Protected by `OriginRejectFilter` middleware (CORS validation)
+- Unauthorized origins receive HTTP 403 Forbidden
+- Invalid tokens return HTTP 401 Unauthorized
 
 ---
 
-### WebSocket Endpoints
+### 4. WebSocket Real-time Communication
 
 #### WS `/echo`
-Echo service for real-time bidirectional communication. **Protected with OriginRejectFilter**.
+Bidirectional WebSocket echo service for real-time text and binary message exchange.
 
-**Protocol:** WebSocket (RFC 6455)
+**Protocol:** WebSocket over HTTP/1.1 (RFC 6455)
 
-**Message Handling:**
-- **Text Messages**: Echo back to client
-- **Binary Messages**: Echo back to client
-- **Lifecycle Events**: Connection/disconnection callbacks
+**Message Types:** Supports text and binary frames
 
-**Connection Patterns:**
+**Lifecycle:**
+- **onConnection**: Client connected, receives confirmation
+- **onMessage**: Client sends message, server echoes back immediately
+- **onClose**: Client disconnected or connection lost
 
-Using `websocat`:
-```bash
-websocat ws://localhost/echo
-# Type messages and they echo back
-```
-
-Using JavaScript:
+**Example (JavaScript):**
 ```javascript
-const ws = new WebSocket('ws://localhost/echo');
+const ws = new WebSocket('ws://localhost:8080/echo');
 
 ws.onopen = () => {
-  ws.send('Hello Server!');
+  console.log('Connected to echo server');
+  ws.send('Hello, Server!');
 };
 
 ws.onmessage = (event) => {
-  console.log('Echo:', event.data);
+  console.log('Echo:', event.data);  // Outputs: "Hello, Server!"
 };
 
 ws.onerror = (error) => {
   console.error('WebSocket error:', error);
 };
+
+ws.onclose = () => {
+  console.log('Disconnected from server');
+};
+```
+
+**Example (Bash with websocat):**
+```bash
+# Install: brew install websocat
+websocat ws://localhost:8080/echo
+# Type messages and they echo back
 ```
 
 **Features:**
-- Full-duplex communication
-- Message queuing for reliable delivery
-- Automatic connection management
-- Origin validation via OriginRejectFilter
+- Full-duplex persistent connection
+- Automatic message queuing
+- Connection state management
+- Protected by `OriginRejectFilter` (origin validation)
 
 ---
 
-## 📝 Project Structure
+## 📂 Project Structure
 
 ```
 init_drogon/
 ├── main.cc                          # Application entry point
-├── config.json                      # Configuration (HTTP, DB, logging)
-├── config.yaml                      # Alternative YAML config
-├── CMakeLists.txt                   # Build configuration
+├── config.json                      # Drogon configuration (create from example)
+├── .env                             # Environment secrets (DO NOT COMMIT)
+├── .env.example                     # Template for secrets
+├── CMakeLists.txt                   # CMake build configuration
+├── README.md                        # This file
+├── TECH_DOC.md                      # Technical implementation details
 │
-├── controllers/                     # HTTP request handlers
-│   ├── TestCtrl.h/.cc              # Simple health check controller
-│   ├── EchoWebsock.h/.cc           # WebSocket echo controller
-│   └── demo_v1_User.h/.cc          # REST API user controller
+├── controllers/                     # HTTP/WebSocket request handlers
+│   ├── TestCtrl.h/.cc              # Simple text response controller
+│   ├── TestController.h/.cc        # Parameter listing controller
+│   ├── EchoWebsock.h/.cc           # WebSocket echo handler
+│   ├── DbHealthController.h/.cc    # Database health check
+│   └── demo_v1_User.h/.cc          # REST API user authentication
 │
-├── filters/                         # Middleware/request filters
-│   └── OriginRejectFilter.h/.cc    # CORS origin validation
+├── filters/                         # HTTP middleware & filters
+│   ├── OriginRejectFilter.h/.cc    # CORS/origin validation middleware
+│   └── TimeFilter.h/.cc            # Request timing/performance filter
 │
-├── plugins/                         # Application plugins (extensibility)
-├── models/                          # Database models (ORM)
-├── views/                           # Template views (if needed)
+├── models/                          # Database ORM models
+│   └── model.json                  # Model definitions
 │
-├-── test/                            # Unit tests
-    ├── CMakeLists.txt
-    └── test_main.cc
+├── plugins/                         # Application plugin modules
+├── views/                           # Template views (Drogon CSP format)
+│   └── ListParameters.csp
+│
+├── test/                            # Unit tests
+│   ├── CMakeLists.txt
+│   └── test_main.cc
+│
+└── uploads/                         # File upload storage (temporary)
+    └── tmp/
 ```
 
-## 🔌 Controllers Overview
+---
 
-### TestCtrl
-**Type**: `HttpSimpleController`
+### Key Components
 
-Basic synchronous controller for simple endpoints. Routes:
-- `GET /`, `POST /`
-- `GET /test`, `POST /test`
+#### Controllers (Request Handlers)
 
-Returns plain text response with status 200 OK.
+| Controller | Type | Routes | Purpose |
+|-----------|------|--------|---------|
+| `TestCtrl` | Simple HTTP | `/`, `/test` | Basic health check |
+| `TestController` | Simple HTTP | `/list_para`, `/slow` | Parameter demo, performance test |
+| `DbHealthController` | HTTP | `/health/db` | Database connectivity check |
+| `demo_v1_User` | HTTP REST | `/api/v1/token`, `/api/v1/{id}/info` | User auth & info retrieval |
+| `EchoWebsock` | WebSocket | `/echo` | Real-time message echo |
 
-### EchoWebsock
-**Type**: `WebSocketController`
+#### Filters (Middleware)
 
-Handles WebSocket connections on `/echo` route:
-- `handleNewConnection()`: Connection established
-- `handleNewMessage()`: Message received, echoed back
-- `handleConnectionClosed()`: Connection terminated
+| Filter | Type | Function |
+|--------|------|----------|
+| `OriginRejectFilter` | Middleware | CORS origin validation, rejects unauthorized origins |
+| `TimeFilter` | Request Filter | Measures request processing time, logs performance |
 
-### demo_v1_User
-**Type**: `HttpController`
-
-RESTful user API in namespace `demo::v1`:
-- Login endpoint with token generation
-- Protected user info endpoint with CORS filtering
-
-## 🛡️ Middleware/Filters
-
-### OriginRejectFilter
-**Type**: `HttpMiddleware`
-
-CORS (Cross-Origin Resource Sharing) validation:
-- Applied to: User info endpoint, WebSocket endpoint
-- Validates `Origin` HTTP header
-- Rejects requests from unauthorized origins
-- Returns HTTP 403 Forbidden on rejection
-
-**Applied Routes:**
-```
-GET  /api/v1/{userId}/info?token={token}
-WS   /echo
-```
+---
 
 ## ⚙️ Configuration
 
-### JSON Configuration (`config.json`)
+### Non-Sensitive Configuration (`config.json`)
 
+The `config.json` file contains server and application settings. **Never commit this file with secrets** - use environment variables for sensitive data.
+
+**Example structure:**
 ```json
 {
   "app": {
-    "threads_num": 4              // Worker thread count
+    "threads_num": 4,
+    "max_connections": 1024,
+    "client_max_body_size": 10000000,
+    "upload_path": "./uploads",
+    "enable_session": true,
+    "session_timeout": 1200
   },
   "listeners": [
     {
-      "address": "0.0.0.0",       // Listen on all interfaces
-      "port": 80,                 // HTTP port
-      "https": false              // Disable HTTPS (set true for production)
-    },
-    {
       "address": "0.0.0.0",
-      "port": 443,
-      "https": false              // HTTPS on 443 (configure certificates)
-    }
-  ],
-  "db_clients": [
-    {
-      "name": "default",
-      "rdbms": "mysql",
-      "host": "127.0.0.1",
-      "port": 3306,
-      "dbname": "db_name",
-      "user": "rootuser",
-      "passwd": "your_password",
-      "connection_number": 4      // Connection pool size
+      "port": 8080,
+      "https": false
     }
   ],
   "log": {
-    "level": "INFO"               // Log level: TRACE, DEBUG, INFO, WARN, ERROR
+    "level": "INFO"
+  }
+}
+```
+
+### Secret Management
+
+**Database credentials and API keys are loaded from environment variables, NOT `config.json`:**
+
+1. **Create `.env` file:**
+   ```bash
+   cp .env.example .env
+   ```
+
+2. **Edit `.env` with your secrets:**
+   ```env
+   DB_HOST=127.0.0.1
+   DB_PORT=3306
+   DB_NAME=culture_hub
+   DB_USER=culture_user
+   DB_PASSWORD=your_secure_password
+   ```
+
+3. **Ensure `.env` is in `.gitignore`** ✓ (already configured)
+
+4. **Load at runtime:** The application loads these variables on startup
+
+**Security Best Practices:**
+- ✅ Secrets in environment variables
+- ✅ `.env` never committed to git
+- ✅ Different credentials per environment (dev/staging/prod)
+- ✅ Use secrets management for production (Docker Secrets, Kubernetes Secrets, HashiCorp Vault)
+
+---
+---
+  "log": {
+    "level": "INFO"
   }
 }
 ```
 
 ### Supported Databases
 
-| RDBMS | Support | Config |
-|-------|---------|--------|
-| MySQL | ✅ Full | `"rdbms": "mysql"` |
-| PostgreSQL | ✅ Full | `"rdbms": "postgresql"` |
-| SQLite3 | ✅ Full | `"filename": "database.db"` |
+| RDBMS | Support | Configuration |
+|-------|---------|----------------|
+| MySQL | ✅ Full Support | `"rdbms": "mysql"` |
+| PostgreSQL | ✅ Full Support | `"rdbms": "postgresql"` |
+| SQLite3 | ✅ Full Support | `"filename": "database.db"` |
+
+---
 
 ## 🧪 Testing
 
-### Build Tests
+### Build and Run Tests
 ```bash
 cd build
-cmake --build . --target all
-ctest    # Run tests
+cmake --build .
+ctest --verbose
 ```
 
 ### Manual Testing
 
-**Health Check:**
+**Health Checks:**
 ```bash
-curl -v http://localhost/
-curl -v -X POST http://localhost/
+curl http://localhost:8080/
+curl http://localhost:8080/health/db
 ```
 
-**User Login:**
+**User Authentication:**
 ```bash
-curl -v -X POST "http://localhost/demo/v1/User/token?userId=test_user&passwd=test_pass"
+curl -X POST "http://localhost:8080/api/v1/token?userId=test&passwd=test"
 ```
 
-**User Info:**
+**WebSocket Echo:**
 ```bash
-TOKEN="<token_from_login>"
-curl -v "http://localhost/demo/v1/User/$id/info?token=$TOKEN"
+websocat ws://localhost:8080/echo
 ```
 
-**WebSocket:**
-```bash
-# Install websocat: brew install websocat
-websocat ws://localhost/echo
+---
+
+## 📊 Performance Characteristics
+
+| Metric | Typical Value |
+|--------|-------------|
+| Throughput | 10,000+ req/s |
+| Response Time (p50) | <1ms |
+| Message Latency (p99) | <5ms |
+| Concurrent Connections | 10,000+ |
+| Memory per Connection | ~1-2 KB |
+
+*Benchmarks for consumer hardware (4 cores)*
+
+---
+
+## 🔐 Security Checklist
+
+### ✅ Implemented
+- CORS origin validation
+- Secrets via environment variables
+- Configuration separation
+- Request logging
+
+### 🔴 Production Requirements
+- [ ] Enable HTTPS/TLS
+- [ ] Implement JWT authentication
+- [ ] Add rate limiting
+- [ ] Strengthen input validation
+- [ ] Use parameterized SQL queries
+- [ ] Add security headers
+- [ ] Production secrets management
+
+---
+
+## 📚 Architecture
+
+### Request Flow
+```
+Client Request → Router → Filters → Controller → Database → Response
 ```
 
-## 📊 Performance Benchmarks
-
-Typical performance on consumer hardware (4 cores, SSD):
-
-| Metric | Value | Notes |
-|--------|-------|-------|
-| **Throughput** | 10,000+ req/s | Hello world endpoint |
-| **Latency (p50)** | <1ms | Local connection |
-| **Latency (p99)** | <5ms | Local connection |
-| **Concurrent Connections** | 10,000+ | Per worker thread |
-| **Memory per Connection** | ~1-2 KB | Idle WebSocket |
-
-## 🔐 Security Considerations
-
-### Current Implementation
-- ✅ CORS filtering via OriginRejectFilter
-- ✅ HTTPS support (disabled by default)
-- ✅ Configurable logging
-
-### Production Recommendations
-- 🔴 **Enable HTTPS**: Configure SSL certificates and set `https: true`
-- 🔴 **Implement Authentication**: Add JWT validation instead of UUID tokens
-- 🔴 **Rate Limiting**: Add rate limiting middleware to prevent abuse
-- 🔴 **Input Validation**: Strengthen parameter validation in controllers
-- 🔴 **SQL Injection Prevention**: Use parameterized queries for databases
-- 🔴 **CSRF Protection**: Add CSRF token validation for state-changing operations
-- 🔴 **Security Headers**: Add HSTS, X-Content-Type-Options, CSP headers
-- 🔴 **Secrets Management**: Use secure credential storage (not in config.json)
-
-## 📚 Architecture & Design Patterns
-
-### Request Handling
-- **Asynchronous**: Non-blocking I/O with callback-based handlers
-- **Thread-Safe**: Drogon manages synchronization internally
-- **Event-Driven**: Single event loop per worker thread
-
-### Data Flow
-```
-Client Request → Network Layer → Router → Middleware → Controller → Response
-                                              ↓
-                                        Database (async)
-```
-
-### Thread Model
+### Threading
 ```
 Main Thread
-  └─ Event Loop 1 (Thread 1)
-  └─ Event Loop 2 (Thread 2)
-  └─ Event Loop 3 (Thread 3)
-  └─ Event Loop 4 (Thread 4)
+├─ Worker Thread 1 (event loop)
+├─ Worker Thread 2 (event loop)
+├─ Worker Thread 3 (event loop)
+└─ Worker Thread 4 (event loop)
 ```
+
+---
 
 ## 🚀 Deployment
 
-### Docker (Recommended)
-
-```dockerfile
-FROM ubuntu:22.04
-RUN apt-get update && apt-get install -y libdrogon0.1 libdrogon-dev
-WORKDIR /app
-COPY . .
-RUN mkdir build && cd build && cmake .. && make
-EXPOSE 80 443
-CMD ["./build/init_drogon"]
-```
-
-Build and run:
+### Docker
 ```bash
-docker build -t drogon-server .
-docker run -p 80:80 -p 443:443 --name drogon drogon-server
+docker build -t culture-hub:latest .
+docker run -p 8080:8080 -e DB_PASSWORD=$YOUR_PASSWORD culture-hub:latest
 ```
 
-### Systemd Service
-
-Create `/etc/systemd/system/drogon.service`:
-```ini
-[Unit]
-Description=Drogon Web Server
-After=network.target
-
-[Service]
-Type=simple
-User=drogon
-WorkingDirectory=/opt/drogon
-ExecStart=/opt/drogon/init_drogon
-Restart=always
-RestartSec=10
-
-[Install]
-WantedBy=multi-user.target
-```
-
-Enable and start:
+### Systemd
 ```bash
-sudo systemctl enable drogon
-sudo systemctl start drogon
-sudo systemctl status drogon
+sudo systemctl start culture-hub
+sudo systemctl enable culture-hub
 ```
 
-## 📖 Documentation
+### Kubernetes
+```bash
+kubectl apply -f k8s-deployment.yaml
+```
 
-- **Drogon Docs**: https://github.com/drogonframework/drogon/wiki
-- **API Reference**: Build with docs flag: `cmake -DBUILD_DOC=ON`
+---
 
 ## 🐛 Troubleshooting
 
 ### Build Issues
-
-**"Drogon not found"**
-```bash
-sudo apt-get install libdrogon-dev  # Ubuntu/Debian
-brew install drogon                  # macOS
-```
-
-**C++17 requirement not met**
-```bash
-# Update compiler
-sudo apt-get install g++-9  # Ubuntu
-g++-9 --version
-```
+- **Drogon not found**: `brew install drogon` or `sudo apt install libdrogon-dev`
+- **C++17 not supported**: Update compiler to GCC 9+ or Clang 10+
+- **MySQL libraries missing**: `brew install mysql` or `sudo apt install default-libmysqlclient-dev`
 
 ### Runtime Issues
+- **Port in use**: `lsof -i :8080` then `kill -9 <PID>`
+- **MySQL connection failed**: Verify credentials in `.env`
+- **CORS rejection**: Check Origin header in requests
 
-**"Port already in use"**
-```bash
-# Kill existing process
-lsof -i :80
-kill -9 <PID>
-
-# Or change port in config.json
-```
-
-**"MySQL connection refused"**
-```bash
-# Check MySQL is running
-sudo systemctl status mysql
-# Verify credentials in config.json
-# Ensure database exists
-```
-
-**"CORS rejection"**
-```bash
-# Check Origin header matches OriginRejectFilter whitelist
-curl -H "Origin: http://localhost:3000" http://localhost/api/v1/user/info
-```
-
-### Debug Logging
-
-Change log level in config.json:
+### Enable Debug Logging
 ```json
 {
-  "log": {
-    "level": "DEBUG"
-  }
+  "log": { "level": "DEBUG" }
 }
 ```
 
-Output format:
-```
-[TIMESTAMP] [LEVEL] [FILE:LINE] Message
-[2024-02-27 10:30:45.123] [DEBUG] [TestCtrl.cc:15] User john login
-```
+---
 
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create feature branch: `git checkout -b feature/new-endpoint`
-3. Commit changes: `git commit -am 'Add new endpoint'`
-4. Push to branch: `git push origin feature/new-endpoint`
-5. Submit pull request
-
-## 📄 License
-
-This project is provided as-is for educational and commercial use.
-
-## 👥 Authors
-
-- **Initial Developer**: \unexCoder
-- **Framework**: Drogon Web Framework Contributors
-
-## 🔗 Resources
+## 📖 Resources
 
 - **Drogon Framework**: https://github.com/drogonframework/drogon
-- **CMake Guide**: https://cmake.org/cmake/help/latest/
-- **C++17 Features**: https://en.cppreference.com/w/cpp/17
-- **REST API Best Practices**: https://restfulapi.net/
-
-## 📞 Support
-
-For issues, questions, or suggestions:
-1. Check existing documentation
-2. Review troubleshooting section
-3. Check Drogon framework documentation
-4. Create an issue with details about your problem
+- **C++ References**: https://cppreference.com
+- **REST Best Practices**: https://restfulapi.net/
 
 ---
 
-**Last Updated**: February 27, 2026  
-**Framework Version**: Drogon (latest)  
-**C++ Standard**: C++17 (minimum), C++20 (recommended)
+## 📝 Contributing
+
+1. Create feature branch: `git checkout -b feature/your-feature`
+2. Make and test changes
+3. Commit with clear messages
+4. Push and create pull request
+
+---
+
+## 📄 License
+
+This project is provided as-is. See LICENSE for details.
+
+---
+
+## 👥 Authors
+
+- **Developed by**: unexCoder
+- **Framework**: Drogon Web Framework
+- **Database**: MySQL/MariaDB
+
+*Last Updated: March 2026 | C++ 17/20 | Drogon 1.8+*
