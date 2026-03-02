@@ -280,6 +280,175 @@ websocat ws://localhost:8080/echo
 
 ---
 
+### 5. Cultural Nodes API (CRUD Operations)
+
+#### GET `/cultural_nodes`
+Retrieve all cultural nodes from the database.
+
+**Response:** JSON array of cultural node objects
+```json
+[
+  {
+    "id": 1,
+    "name": "Historic Museum",
+    "type": "museum",
+    "location": "Downtown",
+    "description": "Historic art and artifacts"
+  },
+  {
+    "id": 2,
+    "name": "Cultural Center",
+    "type": "center",
+    "location": "Midtown",
+    "description": "Community cultural activities"
+  }
+]
+```
+
+**Example:**
+```bash
+curl http://localhost:8080/cultural_nodes
+```
+
+---
+
+#### GET `/cultural_nodes/{id}`
+Retrieve a specific cultural node by ID.
+
+**Parameters:**
+- `id` (integer, path): Cultural node identifier
+
+**Response:** JSON cultural node object
+```json
+{
+  "id": 1,
+  "name": "Historic Museum",
+  "type": "museum",
+  "location": "Downtown",
+  "description": "Historic art and artifacts"
+}
+```
+
+**Example:**
+```bash
+curl http://localhost:8080/cultural_nodes/1
+```
+
+**Error Responses:**
+- `404 Not Found`: Node with specified ID does not exist
+- `400 Bad Request`: Invalid ID format
+
+---
+
+#### POST `/cultural_nodes`
+Create a new cultural node in the database.
+
+**Request Body:** JSON object with node details
+```json
+{
+  "name": "Art Gallery",
+  "type": "gallery",
+  "location": "Arts District",
+  "description": "Contemporary art exhibitions"
+}
+```
+
+**Response:** JSON object with created node and ID
+```json
+{
+  "id": 3,
+  "name": "Art Gallery",
+  "type": "gallery",
+  "location": "Arts District",
+  "description": "Contemporary art exhibitions"
+}
+```
+
+**Example:**
+```bash
+curl -X POST http://localhost:8080/cultural_nodes \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Art Gallery",
+    "type": "gallery",
+    "location": "Arts District",
+    "description": "Contemporary art exhibitions"
+  }'
+```
+
+**Validation:**
+- All required fields must be provided
+- Input parameters are sanitized
+- Database constraints are enforced
+
+---
+
+#### PUT `/cultural_nodes/{id}`
+Update an existing cultural node by ID.
+
+**Parameters:**
+- `id` (integer, path): Cultural node identifier
+
+**Request Body:** JSON object with updated fields
+```json
+{
+  "name": "Updated Museum",
+  "type": "museum",
+  "location": "Downtown",
+  "description": "Updated description"
+}
+```
+
+**Response:** JSON object with updated node
+```json
+{
+  "id": 1,
+  "name": "Updated Museum",
+  "type": "museum",
+  "location": "Downtown",
+  "description": "Updated description"
+}
+```
+
+**Example:**
+```bash
+curl -X PUT http://localhost:8080/cultural_nodes/1 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Updated Museum",
+    "type": "museum",
+    "location": "Downtown",
+    "description": "Updated description"
+  }'
+```
+
+**Error Responses:**
+- `404 Not Found`: Node with specified ID does not exist
+- `400 Bad Request`: Invalid ID format or request body
+- `409 Conflict`: Duplicate constraint violation
+
+---
+
+#### DELETE `/cultural_nodes/{id}`
+Delete a cultural node by ID.
+
+**Parameters:**
+- `id` (integer, path): Cultural node identifier
+
+**Response:** Success acknowledgement (HTTP 204 No Content or JSON confirmation)
+
+**Example:**
+```bash
+curl -X DELETE http://localhost:8080/cultural_nodes/1
+```
+
+**Error Responses:**
+- `404 Not Found`: Node with specified ID does not exist
+- `400 Bad Request`: Invalid ID format
+- `409 Conflict`: Node has related records
+
+---
+
 ## 📂 Project Structure
 
 ```
@@ -297,7 +466,8 @@ init_drogon/
 │   ├── TestController.h/.cc        # Parameter listing controller
 │   ├── EchoWebsock.h/.cc           # WebSocket echo handler
 │   ├── DbHealthController.h/.cc    # Database health check
-│   └── demo_v1_User.h/.cc          # REST API user authentication
+│   ├── demo_v1_User.h/.cc          # REST API user authentication
+│   └── CulturalNodesCtrl.h/.cc     # Cultural nodes CRUD operations
 │
 ├── filters/                         # HTTP middleware & filters
 │   ├── OriginRejectFilter.h/.cc    # CORS/origin validation middleware
