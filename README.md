@@ -500,6 +500,7 @@ init_drogon/
 | `TestController` | Simple HTTP | `/list_para`, `/slow` | Parameter demo, performance test |
 | `DbHealthController` | HTTP | `/health/db` | Database connectivity check |
 | `demo_v1_User` | HTTP REST | `/api/v1/token`, `/api/v1/{id}/info` | User auth & info retrieval |
+| `CulturalNodesCtrl` | HTTP REST | `/cultural_nodes`, `/cultural_nodes/{id}` | CRUD operations for cultural nodes |
 | `EchoWebsock` | WebSocket | `/echo` | Real-time message echo |
 
 #### Filters (Middleware)
